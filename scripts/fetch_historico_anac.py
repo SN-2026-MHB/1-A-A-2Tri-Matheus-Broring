@@ -25,7 +25,7 @@ from supabase import create_client
 # ── Credenciais ───────────────────────────────────────────────────────────────
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "").strip()
-SUPABASE_KEY = os.environ.get("SUPABASE_SEVICE_KEY", "").strip()
+SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "").strip()
 
 if not SUPABASE_URL or not SUPABASE_KEY:
     print("[ERRO CRÍTICO] SUPABASE_URL e SUPABASE_SERVICE_KEY são obrigatórios.")
@@ -62,7 +62,8 @@ print(f"Aeroportos filtrados: {', '.join(AIRPORTS)}")
 # https://sistemas.anac.gov.br/dadosabertos/Voos%20e%20opera%C3%A7%C3%B5es/VRA/YYYY/AAAAMM.csv
 VRA_URL = (
     f"https://sistemas.anac.gov.br/dadosabertos/"
-    f"Voos%20e%20opera%C3%A7%C3%B5es/VRA/{ano}/{ano}{mes}.csv"
+    f"Voos%20e%20opera%C3%A7%C3%B5es%20a%C3%A9reas/"
+    f"Voo%20Regular%20Ativo%20%28VRA%29/{ano}/{ano}{mes}.csv"
 )
 
 # URL alternativa (portal de dados abertos)
@@ -149,7 +150,7 @@ def processar_vra(linhas: list[dict]) -> list[dict]:
     for row in linhas:
         origem  = get_col(row, "origem").upper()
         destino = get_col(row, "destino").upper()
-        if origem not in AIRPORTS and destino not in AIRPORTS:
+        if origin not in AIRPORTS and destino not in AIRPORTS:
             continue
 
         empresa       = get_col(row, "empresa")
@@ -177,8 +178,8 @@ def processar_vra(linhas: list[dict]) -> list[dict]:
 
         resultado.append({
             "ano_mes":          ano_mes,
-            "icao_empresa":     empresa or None,
-            "nr_voo":           nr_voo or None,
+            "icao_empresa":      empresa or None,
+            "nr_voo":            nr_voo or None,
             "icao_origem":      origem or None,
             "icao_destino":     destino or None,
             "dt_referencia":    dt_ref,
@@ -186,7 +187,7 @@ def processar_vra(linhas: list[dict]) -> list[dict]:
             "chegada_real":     parse_dt_anac(chegada_real),
             "atraso_partida":   diff_minutos(partida_prev, partida_real),
             "atraso_chegada":   diff_minutos(chegada_prev, chegada_real),
-            "situacao":         situacao.lower() if situacao else None,
+            "situacao":          situacao.lower() if situacao else None,
             "motivo_alteracao": motivo or None,
         })
 
