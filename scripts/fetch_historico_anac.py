@@ -150,7 +150,7 @@ def processar_vra(linhas: list[dict]) -> list[dict]:
     for row in linhas:
         origem  = get_col(row, "origem").upper()
         destino = get_col(row, "destino").upper()
-        if origin not in AIRPORTS and destino not in AIRPORTS:
+        if origem not in AIRPORTS and destino not in AIRPORTS:
             continue
 
         empresa       = get_col(row, "empresa")
