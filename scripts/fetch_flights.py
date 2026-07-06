@@ -2,7 +2,7 @@
 fetch_flights.py — SIROS/ANAC + Supabase v2
 Melhorias aplicadas:
   - Logs renomeados: "enviados/processados" em vez de "inseridos/atualizados"
-  - Upsert explicado: evita duplicatas via constraint voos_unique
+  - Upsert explained: evita duplicatas via constraint voos_unique
   - execucoes registra: voos_processados, lotes_enviados, erros
   - Falha parcial gera status "erro_parcial" e falha o workflow (exit 1)
   - Falha crítica gera status "erro_critico"
@@ -24,11 +24,11 @@ from supabase import create_client
 # ── Credenciais ───────────────────────────────────────────────────────────────
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "").strip()
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "").strip()
+SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "").strip()
 
 if not SUPABASE_URL or not SUPABASE_KEY:
     print("[ERRO CRÍTICO] SUPABASE_URL e SUPABASE_SERVICE_KEY são obrigatórios.")
-    print("              Configure-os como GitHub Secrets no repositório.")
+    print("               Configure-os como GitHub Secrets no repositório.")
     sys.exit(1)
 
 db = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -236,6 +236,10 @@ registros = deduplicar(registros)
 removidos = antes - len(registros)
 if removidos:
     print(f"  Deduplicação: {removidos} registro(s) duplicado(s) removido(s) antes do envio")
+
+total_processados = 0
+total_lotes = 0
+total_erros = 0
 
 for i in range(0, len(registros), LOTE):
     lote     = registros[i:i + LOTE]
